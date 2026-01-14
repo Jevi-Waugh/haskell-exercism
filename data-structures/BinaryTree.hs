@@ -24,15 +24,4 @@ find num (Node left value right)
 -- -- mirror image of a tree
 mirror :: Tree a -> Tree a
 mirror Empty = Empty
-mirror (Node (left) value (right)) = Node (mirror right) value (mirror left)
-
-
-
-
-
-
-
-
-
-
-
+mirror (Node left value right) = Node (mirror right) value (mirror left)

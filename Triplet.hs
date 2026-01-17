@@ -10,12 +10,23 @@ module Triplet (tripletsWithSum) where
 
 -- Paul's solution
 tripletsWithSum :: Int -> [(Int, Int, Int)]
+-- tripletsWithSum n = 
+--     [(x,y,z) |
+--     z <- [1..n], 
+--     y <- [1..n], 
+--     x <- [n - y - z], 
+--     x > 0,
+--     x < y,
+--     (z^2 - y^2) == (x^2)]
+
+-- mine
 tripletsWithSum n = 
     [(x,y,z) |
-    z <- [1..n], 
     y <- [1..n], 
+    z <- [y..n], 
     x <- [n - y - z], 
     x > 0,
     x < y,
     (z^2 - y^2) == (x^2)]
+
 

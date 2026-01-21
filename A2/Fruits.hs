@@ -140,8 +140,13 @@ data Tree a = Tree a [Tree a] deriving (Eq, Show)
 
 smallest :: [Tree a] -> Maybe (Tree a)
 smallest [] = Nothing
--- smallest (x:xs) = Just x
+smallest xs
+    | getNum == Nothing = Nothing
+    | otherwise         = recoverTreeFromIdx idx xs
 
+    where
+        getNum = trickleDepth (map initFrontier xs) 
+        Just idx = getNum
 
 
 -- What if we checked all trees at the same time
@@ -154,14 +159,40 @@ smallest [] = Nothing
 -- so bfs for all trees
 
 
+-- start a tree's froniter at depth 0
+initFrontier  :: Tree a -> [Tree a]
+initFrontier tree = [tree]
 
+-- take current frontier and produce next frontier
+getAllFrontiers :: [Tree a] -> [Tree a]
+getAllFrontiers [] = []
+-- find a way to get all branches
+getAllFrontiers (Tree _ branches: rest) = branches ++ getAllFrontiers rest
 
+-- if we get frontiers, we have that function to every tree in the original list.
+-- and basically get all frontiers settled at specific depth
+-- we have a list of trees for every starting tree
+findEmptyFrontier :: [[Tree a]] -> Maybe Int
+findEmptyFrontier [] = Nothing
+findEmptyFrontier (lt:rest) = recurse 0 (lt:rest)
+    where
+        recurse num (x:xs) = if x == [] then Just num else recurse (num + 1) xs
+        recurse _ [] = Nothing
 
+trickleDepth :: [[Tree a]] -> Maybe Int
+-- trickle but for eac tree's frontier
+trickleDepth (x:xs)
+    | findEmptyFrontier (x:xs) == Nothing     = trickleDepth $ (getAllFrontiers x : map getAllFrontiers xs)
+    | otherwise                               = findEmptyFrontier (x:xs) -- return
 
-
-
-
-
+-- recover tree from index
+recoverTreeFromIdx :: Int -> [Tree a] -> Maybe (Tree a)
+recoverTreeFromIdx _ [] = Nothing
+recoverTreeFromIdx num (t:ts) = here 0 (t:ts)
+    where
+        here _ [] = Nothing
+        -- recurse till we find the indexed tree
+        here n (t:ts) = if num == n then Just t else here (n + 1) ts
 
 
 
